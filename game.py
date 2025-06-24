@@ -18,7 +18,7 @@ class Game:
         self.selected_mode = "normal"
 
     def run(self):
-        self.ui.show_main_menu(self.select_mode, self.open_settings, self,quit_game)
+        self.ui.show_main_menu(self.select_mode, self.open_settings, self.quit_game)
 
     def select_mode(self):
         self.ui.show_mode_selector(self.start_game)
