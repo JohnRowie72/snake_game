@@ -17,6 +17,7 @@ class Game:
         self.high_score = load_high_score()
         self.is_paused = False
         self.selected_mode = "normal"
+        selfsound = SoundManager()
 
     def run(self):
         self.ui.show_main_menu(self.select_mode, self.open_settings, self.quit_game)
