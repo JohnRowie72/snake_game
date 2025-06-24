@@ -5,6 +5,7 @@ from snake import Snake
 from food import Food
 from modes import GameMode, BlitzMode, InvertedMode
 from utilities import load_high_score, save_high_score
+from sounds import SoundManager
 
 class Game:
     def __init__(self):
