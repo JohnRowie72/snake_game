@@ -35,7 +35,7 @@ class UI:
         while True:
             self.screen.fill(WHITE)
             title_surface = self.big_font.render("Snake Game", True, GREEN)
-            self.screen.blit(title_surface, (SCREEN_WIDTH - title_surface.get_width()) // 2, 100)
+            self.screen.blit(title_surface, ((SCREEN_WIDTH - title_surface.get_width()) // 2, 100))
 
             buttons = [
                 Button("Start Game", 300, 220, 200, 50, on_start),
