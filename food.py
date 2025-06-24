@@ -1,5 +1,6 @@
 import random
-from config import SCREEN_WIDTH, SCREEN_HEIGHT, SNAKE_BLOCK
+import pygame
+from config import SCREEN_WIDTH, SCREEN_HEIGHT, SNAKE_BLOCK, RED
 
 class Food:
     def __init__(self):
