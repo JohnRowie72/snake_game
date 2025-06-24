@@ -3,7 +3,7 @@ from config import GREEN, SNAKE_BLOCK
 
 class Snake:
     def __init__(self):
-        self.body = [(100, 50), (80, 50), (60, 50)]
+        self.body = [(100, 100), (80, 100), (60, 100)]
         self.direction = 'RIGHT'
         self.grow = False
 

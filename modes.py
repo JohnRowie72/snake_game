@@ -23,6 +23,10 @@ class GameMode:
                 continue
 
             self.snake.move()
+            
+            #debug print
+            print("Snake Head:", self.snake.body[0], "Food:", self.food.position)
+
             if check_collision(self.snake.body[0], self.food.position):
                 self.food.position = self.food.spawn()
                 self.snake.grow = True
