@@ -103,7 +103,7 @@ class UI:
         ]
 
         for index, message in enumerate(messages):
-            self.screen.blit(message, (SCREEN_WIDTH // 2 - message.get_width() // 2, 180 + index * 60))
+            self.screen.blit(message, ((SCREEN_WIDTH // 2 - message.get_width() // 2, 180 + index * 60)))
 
         pygame.display.update()
 

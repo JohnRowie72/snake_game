@@ -1,5 +1,5 @@
 import pygame
-from config import SNAKE_BLOCK
+from config import GREEN, SNAKE_BLOCK
 
 class Snake:
     def __init__(self):
