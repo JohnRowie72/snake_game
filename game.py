@@ -18,6 +18,7 @@ class Game:
         self.is_paused = False
         self.selected_mode = "normal"
         self.sound = SoundManager()
+        self.sound.play_music()
 
     def run(self):
         self.ui.show_main_menu(self.select_mode, self.open_settings, self.quit_game)

@@ -32,6 +32,7 @@ class GameMode:
                 self.snake.grow = True
                 self.score += 10
                 self.game.sound.play_eat()
+                self.game.sound.play_eat()
                 if self.score % 50 == 0:
                     self.speed += 1
             
