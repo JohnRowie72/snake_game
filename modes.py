@@ -1,7 +1,7 @@
 import pygame
 import time
 from config import BLACK, FPS
-from utilities import check_collision
+from utilities import check_collision, get_high_score
 
 class GameMode:
     def __init__(self, game):
@@ -24,14 +24,13 @@ class GameMode:
 
             self.snake.move()
             
-            #debug print
+            # debug print
             print("Snake Head:", self.snake.body[0], "Food:", self.food.position)
 
             if check_collision(self.snake.body[0], self.food.position):
                 self.food.position = self.food.spawn()
                 self.snake.grow = True
                 self.score += 10
-                self.game.sound.play_eat()
                 self.game.sound.play_eat()
                 if self.score % 50 == 0:
                     self.speed += 1
@@ -46,8 +45,9 @@ class GameMode:
             pygame.display.update()
 
         self.game.sound.play_game_over()
-        self.ui.show_game_over(self.score, self.game.high_score, self.game.run)
-        return
+        high_score = get_high_score(self.game.selected_mode)
+        self.ui.show_game_over(self.score, high_score, self.game.run)
+        return self.score
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -100,8 +100,9 @@ class BlitzMode(GameMode):
             pygame.display.update()
 
         self.game.sound.play_game_over()
-        self.ui.show_game_over(self.score, self.game.high_score, self.game.run)
-        return
+        high_score = get_high_score(self.game.selected_mode)
+        self.ui.show_game_over(self.score, high_score, self.game.run)
+        return self.score
 
 class InvertedMode(GameMode):
     def handle_events(self):

@@ -4,7 +4,7 @@ from ui import UI
 from snake import Snake
 from food import Food
 from modes import GameMode, BlitzMode, InvertedMode
-from utilities import load_high_score, save_high_score
+from utilities import load_all_highscores, add_score, get_high_score, get_leaderboard
 from sounds import SoundManager
 
 class Game:
@@ -14,14 +14,18 @@ class Game:
         pygame.display.set_caption("Snake Game")
         self.clock = pygame.time.Clock()
         self.ui = UI(self.screen)
-        self.high_score = load_high_score()
         self.is_paused = False
         self.selected_mode = "normal"
         self.sound = SoundManager()
         self.sound.play_music()
 
     def run(self):
-        self.ui.show_main_menu(self.select_mode, self.open_settings, self.quit_game)
+        self.ui.show_main_menu(
+            on_start=self.select_mode, 
+            on_settings=self.open_settings, 
+            on_quit=self.quit_game,
+            on_leaderboard=self.show_leaderboard
+        )
 
     def select_mode(self):
         self.ui.show_mode_selector(self.start_game)
@@ -31,13 +35,20 @@ class Game:
         while True:
             self.snake = Snake()
             self.food = Food()
-            mode_class = {"normal": GameMode, "blitz": BlitzMode, "inverted": InvertedMode}[mode]
+            mode_class = {
+                "normal": GameMode, 
+                "blitz": BlitzMode, 
+                "inverted": InvertedMode
+            }[mode]
             self.mode = mode_class(self)
             score = self.mode.play()
-            if score > self.high_score:
-                self.high_score = score
-                save_high_score(score)
-            self.ui.show_game_over(score, self.high_score)
+
+            high_score = get_high_score(mode)
+            if score > high_score:
+                player_name = self.ui.ask_player_name()
+                add_score(mode, player_name, score)
+
+            self.ui.show_game_over(score, get_high_score(mode), self.run)
 
     def open_settings(self):
         self.ui.show_settings()
@@ -46,3 +57,9 @@ class Game:
     def quit_game(self):
         pygame.quit()
         exit()
+
+    def show_leaderboard(self):
+        mode = self.ui.ask_leaderboard_mode()
+        leaderboard = get_leaderboard(mode)
+        self.ui.show_leaderboard(leaderboard)
+        self.run()
