@@ -45,11 +45,14 @@ class GameMode:
             self.ui.show_score(self.score)
             pygame.display.update()
 
-        return self.score
+        self.game.sound.play_game_over()
+        self.ui.show_game_over(self.score, self.game.high_score, self.game.run)
+        return
 
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
@@ -65,9 +68,15 @@ class BlitzMode(GameMode):
     def play(self):
         start = time.time()
         duration = 30
+        running = True
         self.score = 0
 
-        while time.time() - start < duration:
+        while running:
+            elapsed = time.time() - start
+            time_left = duration - elapsed
+            if time_left <= 0:
+                break
+
             self.clock.tick(self.speed)
             self.handle_events()
             if self.game.is_paused:
@@ -81,20 +90,24 @@ class BlitzMode(GameMode):
                 self.game.sound.play_eat()
 
             if self.snake.check_self_collision() or self.hit_wall():
-                break
+                running = False
 
             self.screen.fill(BLACK)
             self.snake.draw(self.screen)
             self.food.draw(self.screen)
             self.ui.show_score(self.score)
+            self.ui.show_timer(time_left)
             pygame.display.update()
 
-        return self.score
+        self.game.sound.play_game_over()
+        self.ui.show_game_over(self.score, self.game.high_score, self.game.run)
+        return
 
 class InvertedMode(GameMode):
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                pygame.quit()
                 exit()
             if event.type == pygame.KEYDOWN:
                 key = event.key

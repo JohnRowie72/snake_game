@@ -93,24 +93,35 @@ class UI:
         score_surface = self.font.render(f"Score: {score}", True, WHITE)
         self.screen.blit(score_surface, (10, 10))
 
-    def show_game_over(self, score, high_score):
-        self.screen.fill(BLACK)
-        messages = [
-            self.big_font.render("Game Over!", True, RED),
-            self.font.render(f"Score: {score}", True, WHITE),
-            self.font.render(f"High Score: {high_score}", True, WHITE),
-            self.font.render("Press Enter to Continue", True, GRAY)
-        ]
+    def show_timer(self, time_left):
+        timer_surface = self.font.render(f"Time Left: {int(time_left)}s", True, WHITE)
+        self.screen.blit(timer_surface, (SCREEN_WIDTH - timer_surface.get_width() - 20, 10))
 
-        for index, message in enumerate(messages):
-            self.screen.blit(message, ((SCREEN_WIDTH // 2 - message.get_width() // 2, 180 + index * 60)))
+    def show_game_over(self, score, high_score, on_return):
+        button = Button("Return to Main Menu", SCREEN_WIDTH // 2 - 150, 420, 300, 60, on_return)
 
-        pygame.display.update()
+        font_small = pygame.font.SysFont(FONT_NAME, 28)
 
         while True:
+            self.screen.fill(BLACK)
+            messages = [
+                self.big_font.render("Game Over!", True, RED),
+                self.font.render(f"Score: {score}", True, WHITE),
+                self.font.render(f"High Score: {high_score}", True, WHITE),
+                font_small.render("Press Enter to play again", True, GRAY)
+            ]
+
+            for index, message in enumerate(messages):
+                y_pos = 150 + index * 60
+                self.screen.blit(message, ((SCREEN_WIDTH // 2 - message.get_width() // 2, 150 + index * 60)))
+
+            button.draw(self.screen)
+            pygame.display.update()
+
             for event in pygame.event.get():
-                if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                    return
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        return
