@@ -7,8 +7,11 @@ class Food:
         self.position = self.spawn()
 
     def spawn(self):
-        spawn_x = random.randrange(0, SCREEN_WIDTH, SNAKE_BLOCK)
-        spawn_y = random.randrange(0, SCREEN_HEIGHT, SNAKE_BLOCK)
+        grid_columns = SCREEN_WIDTH // SNAKE_BLOCK
+        grid_rows = SCREEN_HEIGHT // SNAKE_BLOCK
+
+        spawn_x = random.randint(1, grid_columns - 2) * SNAKE_BLOCK
+        spawn_y = random.randint(1, grid_rows - 2) * SNAKE_BLOCK
         return (spawn_x, spawn_y)
 
     def draw(self, screen):
