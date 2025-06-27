@@ -154,3 +154,8 @@ class UI:
                     exit()
                 elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                     return
+
+    def show_score(self, score):
+        score_surface = self.font.render(f"Score: {score}", True, WHITE)
+        self.screen.blit(score_surface, (10, 10))
+
