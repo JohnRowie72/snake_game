@@ -12,7 +12,6 @@ class Button:
 
     def draw(self, screen):
         mouse_position = pygame.mouse.get_pos()
-        mouse_click = pygame.mouse.get_pressed()[0]
         is_hover = self.rect.collidepoint(mouse_position)
         color = self.hover if is_hover else self.color
 
@@ -20,10 +19,6 @@ class Button:
         text_surface = self.font.render(self.text, True, BLACK)
         text_rect = text_surface.get_rect(center=self.rect.center)
         screen.blit(text_surface, text_rect)
-
-        if is_hover and mouse_click:
-            pygame.time.delay(150)
-            self.callback()
 
 class UI:
     def __init__(self, screen):
@@ -33,22 +28,26 @@ class UI:
         self.small_font = pygame.font.SysFont(FONT_NAME, 28)
 
     def show_main_menu(self, on_start, on_settings, on_quit, on_leaderboard):
+        buttons = [
+            Button("Start Game", 300, 200, 200, 50, on_start),
+            Button("Leaderboard", 300, 270, 200, 50, on_leaderboard),
+            Button("Settings", 300, 340, 200, 50, on_settings),
+            Button("Quit", 300, 410, 200, 50, on_quit)
+        ]
+
         while True:
             self.screen.fill(WHITE)
             title_surface = self.big_font.render("Snake Game", True, GREEN)
             self.screen.blit(title_surface, ((SCREEN_WIDTH - title_surface.get_width()) // 2, 100))
 
-            buttons = [
-                Button("Start Game", 300, 200, 200, 50, on_start),
-                Button("Leaderboard", 300, 270, 200, 50, on_leaderboard),
-                Button("Settings", 300, 340, 200, 50, on_settings),
-                Button("Quit", 300, 410, 200, 50, on_quit)
-            ]
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for button in buttons:
+                        if button.rect.collidepoint(event.pos):
+                            button.callback()
 
             for button in buttons:
                 button.draw(self.screen)
@@ -56,21 +55,25 @@ class UI:
             pygame.display.update()
 
     def show_mode_selector(self, on_select):
+        buttons = [
+            Button("Normal Mode", 300, 220, 200, 50, lambda: on_select("normal")),
+            Button("Blitz Mode", 300, 290, 200, 50, lambda: on_select("blitz")),
+            Button("Inverted Mode", 300, 360, 200, 50, lambda: on_select("inverted")),
+        ]
+
         while True:
             self.screen.fill(BLACK)
             title_surface = self.big_font.render("Select Mode", True, GREEN)
             self.screen.blit(title_surface, ((SCREEN_WIDTH - title_surface.get_width()) // 2, 100))
 
-            buttons = [
-                Button("Normal Mode", 300, 220, 200, 50, lambda: on_select("normal")),
-                Button("Blitz Mode", 300, 290, 200, 50, lambda: on_select("blitz")),
-                Button("Inverted Mode", 300, 360, 200, 50, lambda: on_select("inverted")),
-            ]
-
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    for button in buttons:
+                        if button.rect.collidepoint(event.pos):
+                            button.callback()
 
             for button in buttons:
                 button.draw(self.screen)
@@ -109,30 +112,33 @@ class UI:
                             name += event.unicode
 
     def ask_leaderboard_mode(self):
-        while True:
+        self.selected_mode = None
+        buttons = [
+            Button("Normal", 300, 220, 200, 50, lambda: setattr(self, 'selected_mode', 'normal')),
+            Button("Blitz", 300, 290, 200, 50, lambda: setattr(self, 'selected_mode', 'blitz')),
+            Button("Inverted", 300, 360, 200, 50, lambda: setattr(self, 'selected_mode', 'inverted')),
+        ]
+
+        while self.selected_mode is None:
             self.screen.fill(BLACK)
             title = self.big_font.render("View Leaderboard", True, GREEN)
             self.screen.blit(title, ((SCREEN_WIDTH - title.get_width()) // 2, 100))
-
-            buttons = [
-                Button("Normal", 300, 220, 200, 50, lambda: setattr(self, 'selected_mode', 'normal')),
-                Button("Blitz", 300, 290, 200, 50, lambda: setattr(self, 'selected_mode', 'blitz')),
-                Button("Inverted", 300, 360, 200, 50, lambda: setattr(self, 'selected_mode', 'inverted')),
-            ]
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     exit()
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     for button in buttons:
-                        if button.rect.collidepoint(pygame.mouse.get_pos()):
-                            return self.selected_mode
+                        if button.rect.collidepoint(event.pos):
+                            button.callback()
 
             for button in buttons:
                 button.draw(self.screen)
 
             pygame.display.update()
+
+        return self.selected_mode
 
     def show_leaderboard(self, leaderboard):
         while True:
@@ -159,3 +165,36 @@ class UI:
         score_surface = self.font.render(f"Score: {score}", True, WHITE)
         self.screen.blit(score_surface, (10, 10))
 
+    def show_timer(self, time_left):
+        timer_surface = self.font.render(f"Time Left: {int(time_left)}s", True, WHITE)
+        self.screen.blit(timer_surface, (SCREEN_WIDTH - timer_surface.get_width() - 20, 10))
+
+    def show_game_over(self, score, high_score, on_return):
+        button = Button("Return to Main Menu", SCREEN_WIDTH // 2 - 150, 420, 300, 60, on_return)
+        font_small = pygame.font.SysFont(FONT_NAME, 28)
+        
+        while True:
+            self.screen.fill(BLACK)
+            messages = [
+                self.big_font.render("Game Over!", True, RED),
+                self.font.render(f"Score: {score}", True, WHITE),
+                self.font.render(f"High Score: {high_score}", True, WHITE),
+                font_small.render("Press Enter to play again", True, GRAY)
+            ]
+            
+            for index, message in enumerate(messages):
+                y_pos = 150 + index * 60
+                self.screen.blit(message, ((SCREEN_WIDTH // 2 - message.get_width() // 2), y_pos))
+                
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+                    return
+                elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    if button.rect.collidepoint(event.pos):
+                        button.callback()
+
+            button.draw(self.screen)
+            pygame.display.update()
